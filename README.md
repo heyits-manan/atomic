@@ -1,10 +1,10 @@
-# Atomic ⚛️
+# Atomic
 
 A high-performance, double-entry ledger and payment gateway built with Node.js, TypeScript, and raw PostgreSQL.
 
 **The Goal:** To build a financial system that guarantees **ACID compliance** and **Idempotency** at scale, without relying on ORMs.
 
-## 🚀 Key Features
+## Key Features
 
 * **Double-Entry Ledger:** Every transaction is recorded as a debit/credit pair. The system is always zero-sum.
 * **Idempotency Keys:** Prevents double-spending even if the network fails during a request.
@@ -12,7 +12,7 @@ A high-performance, double-entry ledger and payment gateway built with Node.js, 
 * **Raw SQL:** No ORMs. All database interactions are written in raw SQL for maximum control over transaction isolation levels.
 * **Queue-Based Webhooks:** (Coming Soon) Reliable event delivery using Redis and BullMQ.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 * **Runtime:** Node.js (Express)
 * **Language:** TypeScript
@@ -20,7 +20,7 @@ A high-performance, double-entry ledger and payment gateway built with Node.js, 
 * **Migrations:** node-pg-migrate
 * **Architecture:** Clean Architecture (Services, Repositories, Controllers)
 
-## 📦 Getting Started
+## Getting Started
 
 ```bash
 # 1. Clone the repo

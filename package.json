@@ -1,0 +1,40 @@
+{
+  "name": "atomic-payment-gateway",
+  "version": "1.0.0",
+  "description": "High-performance Payment Gateway API",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "migrate:create": "node-pg-migrate create --migrations-dir src/db/migrations --migration-filename-format utc",
+    "migrate:up": "node-pg-migrate up --migrations-dir src/db/migrations --envPath .env",
+    "migrate:down": "node-pg-migrate down --migrations-dir src/db/migrations --envPath .env"
+  },
+  "keywords": [
+    "payment",
+    "gateway",
+    "api"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "node-pg-migrate": "^8.0.4",
+    "pg": "^8.18.0",
+    "uuid": "^13.0.0",
+    "winston": "^3.19.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.2.3",
+    "@types/pg": "^8.16.0",
+    "@types/uuid": "^10.0.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  }
+}

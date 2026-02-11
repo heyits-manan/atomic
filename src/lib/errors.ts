@@ -61,3 +61,15 @@ export class InternalServerError extends AppError {
         super(message, 500, false);
     }
 }
+
+export class InsufficientBalanceError extends AppError {
+    constructor(message = "Insufficient Balance") {
+        super(message, 422);
+    }
+}
+
+export class CurrencyMismatchError extends AppError {
+    constructor(message = "Currency Mismatch") {
+        super(message, 422);
+    }
+}

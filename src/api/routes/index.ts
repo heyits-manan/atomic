@@ -3,7 +3,9 @@ import { ApiResponse } from "../../types";
 import { authenticate } from "../middlewares/auth";
 import { validateBody, validateParams } from "../middlewares";
 import { AccountController } from "../controllers/AccountController";
+import { PaymentController } from "../controllers/PaymentController";
 import { createAccountSchema, accountIdParamSchema } from "../schemas/account";
+import { createPaymentSchema } from "../schemas/payment";
 
 const router = Router();
 
@@ -27,10 +29,9 @@ router.post('/accounts', validateBody(createAccountSchema), AccountController.cr
 router.get('/accounts/:id', validateParams(accountIdParamSchema), AccountController.get);
 
 // --- PAYMENTS ---
-// router.post('/payments', PaymentController.createIntent);
+router.post('/payments', validateBody(createPaymentSchema), PaymentController.create);
 
 // --- TRANSFERS ---
 // router.post('/transfers', TransferController.execute);
 
 export default router;
-

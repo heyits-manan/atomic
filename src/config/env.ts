@@ -10,6 +10,7 @@ interface EnvConfig {
     REDIS_URL: string;
     CORS_ORIGIN: string;
     LOG_LEVEL: string;
+    MERCHANT_API_KEY_HASH: string;
 }
 
 function getEnv(key: string, fallback?: string): string {
@@ -27,4 +28,5 @@ export const env: EnvConfig = {
     REDIS_URL: getEnv("REDIS_URL", "redis://localhost:6379"),
     CORS_ORIGIN: getEnv("CORS_ORIGIN", "*"),
     LOG_LEVEL: getEnv("LOG_LEVEL", "info"),
+    MERCHANT_API_KEY_HASH: getEnv("MERCHANT_API_KEY_HASH"),
 };

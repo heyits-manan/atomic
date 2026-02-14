@@ -6,6 +6,7 @@ import { AccountController } from "../controllers/AccountController";
 import { PaymentController } from "../controllers/PaymentController";
 import { createAccountSchema, accountIdParamSchema } from "../schemas/account";
 import { createPaymentSchema } from "../schemas/payment";
+import { idempotencyMiddleware } from "@api/middlewares/idempotency";
 
 const router = Router();
 
@@ -24,12 +25,14 @@ router.get("/health", (_req: Request, res: Response<ApiResponse<{ status: string
 // ─── Protected Routes (everything below requires a valid API key) ───
 router.use(authenticate);
 
+// --- PAYMENTS ---
+// Idempotency only on payments
+router.post('/payments', idempotencyMiddleware, validateBody(createPaymentSchema), PaymentController.create);
+
 // --- ACCOUNTS ---
 router.post('/accounts', validateBody(createAccountSchema), AccountController.create);
 router.get('/accounts/:id', validateParams(accountIdParamSchema), AccountController.get);
 
-// --- PAYMENTS ---
-router.post('/payments', validateBody(createPaymentSchema), PaymentController.create);
 
 // --- TRANSFERS ---
 // router.post('/transfers', TransferController.execute);

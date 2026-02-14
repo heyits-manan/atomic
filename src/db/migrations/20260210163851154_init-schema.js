@@ -9,7 +9,7 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-    pgm.sql(`
+  pgm.sql(`
     -- 1. Enable UUID extension (Critical for generating IDs)
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -41,7 +41,9 @@ export const up = (pgm) => {
         amount BIGINT NOT NULL,
         type VARCHAR(10) CHECK (type IN ('DEBIT', 'CREDIT')),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        
     );
+
   `);
 };
 
@@ -51,7 +53,7 @@ export const up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 export const down = (pgm) => {
-    pgm.sql(`
+  pgm.sql(`
     DROP TABLE ledger_entries;
     DROP TABLE payment_intents;
     DROP TABLE accounts;

@@ -6,7 +6,7 @@ import { AccountController } from "../controllers/AccountController";
 import { PaymentController } from "../controllers/PaymentController";
 import { createAccountSchema, accountIdParamSchema } from "../schemas/account";
 import { createPaymentSchema } from "../schemas/payment";
-import { idempotencyMiddleware } from "@api/middlewares/idempotency";
+import { idempotencyMiddleware } from "../middlewares/idempotency";
 
 const router = Router();
 

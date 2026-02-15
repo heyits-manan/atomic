@@ -38,6 +38,11 @@ export async function idempotencyMiddleware(req: Request, res: Response, next: N
                     meta: { timestamp: new Date().toISOString() },
                 });
             }
+
+            if (existingRecord.status === 'FAILED') {
+                // Allow retry — delete the old failed record so a fresh one can be created below
+                await client.query('DELETE FROM idempotency_keys WHERE key = $1', [idempotencyKey]);
+            }
         }
 
         const requestBodyHash = createHash('sha256').update(JSON.stringify(req.body)).digest('hex');
@@ -66,6 +71,18 @@ export async function idempotencyMiddleware(req: Request, res: Response, next: N
             }).catch(err => console.error("Failed to save idempotency response: ", err));
             return originalJson(body);
         }
+
+        // Mark as FAILED if the response is an error (status >= 400)
+        res.on('finish', () => {
+            if (res.statusCode >= 400) {
+                IdempotencyRepository.update(client, {
+                    key: idempotencyKey,
+                    status: 'FAILED',
+                    statusCode: res.statusCode,
+                    responseBody: null,
+                }).catch(err => console.error('Failed to update idempotency key to FAILED:', err));
+            }
+        });
 
         next();
     } catch (error) {

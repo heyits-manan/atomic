@@ -12,3 +12,8 @@ export const createPaymentSchema = z.object({
     description: z.string().optional().default('API Payment'),
     merchantId: z.string().uuid('merchantId must be a valid UUID'),
 });
+
+
+export const paymentIdParamSchema = z.object({
+    id: z.uuid({ message: 'Invalid payment ID format' }),
+});

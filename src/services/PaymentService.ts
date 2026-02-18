@@ -3,6 +3,7 @@ import { PaymentRepository, Payment } from '../db/repositories/PaymentRepository
 import { LedgerService } from './LedgerService';
 import { paymentQueue } from '../queues/paymentQueue';
 import { logger } from '../lib/logger';
+import { NotFoundError } from '@lib/errors';
 
 export class PaymentService {
     /**
@@ -41,6 +42,20 @@ export class PaymentService {
             client.release();
         }
     }
+
+    static async getById(paymentId: string): Promise<Payment> {
+        const client = await pool.connect();
+        try {
+            const payment = await PaymentRepository.findById(client, paymentId);
+            if (!payment) {
+                throw new NotFoundError(`Payment not found: ${paymentId}`);
+            }
+            return payment;
+        } finally {
+            client.release();
+        }
+    }
+
 
     /**
      * Called by the Worker (background side).

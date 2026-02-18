@@ -29,4 +29,18 @@ export class PaymentController {
             next(err);
         }
     }
+
+    static async get(req: Request, res: Response<ApiResponse>, next: NextFunction): Promise<void> {
+        try {
+            const payment = await PaymentService.getById(req.params.id as string);
+
+            res.json({
+                success: true,
+                data: { payment },
+                meta: { timestamp: new Date().toISOString() },
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }

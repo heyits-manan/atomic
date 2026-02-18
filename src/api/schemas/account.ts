@@ -14,5 +14,5 @@ export const createAccountSchema = z.object({
  * GET /api/v1/accounts/:id — params schema.
  */
 export const accountIdParamSchema = z.object({
-    id: z.string().uuid('Invalid account ID format'),
+    id: z.uuid({ message: 'Invalid account ID format' }),
 });

@@ -22,7 +22,6 @@ export class IdempotencyRepository {
     }
 
     static async create(client: PoolClient, body: { key: string, method: string, path: string, requestBodyHash: string }): Promise<IdempotencyRecord> {
-
         const query = `INSERT INTO idempotency_keys (key, method, path, request_body_hash) VALUES ($1, $2, $3, $4) ON CONFLICT (key) DO NOTHING RETURNING *`;
         const values = [body.key, body.method, body.path, body.requestBodyHash];
         const result = await client.query(query, values);

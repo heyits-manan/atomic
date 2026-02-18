@@ -5,22 +5,24 @@ import { ApiResponse } from '../../types';
 export class PaymentController {
     /**
      * POST /api/v1/payments
-     * Processes a card payment: charges the card (simulated) and credits the merchant.
+     * Accepts a payment request, persists it as PENDING, and queues it
+     * for async processing. Returns 202 Accepted immediately.
      * Body is already validated by the validateBody middleware.
      */
     static async create(req: Request, res: Response<ApiResponse>, next: NextFunction): Promise<void> {
         try {
-            const result = await PaymentService.processPayment({
+            const payment = await PaymentService.createAndQueue({
                 merchantId: req.body.merchantId,
                 amount: req.body.amount,
                 currency: req.body.currency,
-                description: req.body.description || 'API Payment',
-                token: req.body.source,
+                source: req.body.source,
+                description: req.body.description,
+                idempotencyKey: req.get('Idempotency-Key'),
             });
 
-            res.status(200).json({
+            res.status(202).json({
                 success: true,
-                data: result,
+                data: payment,
                 meta: { timestamp: new Date().toISOString() },
             });
         } catch (err) {

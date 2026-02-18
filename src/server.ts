@@ -2,9 +2,11 @@ import app from "./app";
 import { env } from "./config/env";
 import { closePool } from "./config/db";
 import { logger } from "./lib/logger";
+import { paymentWorker } from "./workers/paymentWorker";
 
 const server = app.listen(env.PORT, () => {
-    logger.info(`🚀 Server running on port ${env.PORT} [${env.NODE_ENV}]`);
+    logger.info(`Server running on port ${env.PORT} [${env.NODE_ENV}]`);
+    logger.info(`Payment worker started (concurrency: 5)`);
 });
 
 // ─── Graceful shutdown ──────────────────────────────────────
@@ -16,12 +18,19 @@ function shutdown(signal: string) {
         logger.info("HTTP server closed.");
 
         try {
+            await paymentWorker.close();
+            logger.info("Payment worker closed.");
+        } catch (err) {
+            logger.error("Error closing payment worker", { error: err });
+        }
+
+        try {
             await closePool();
         } catch (err) {
             logger.error("Error closing DB pool during shutdown", { error: err });
         }
 
-        logger.info("Shutdown complete. Bye 👋");
+        logger.info("Shutdown complete. Bye");
         process.exit(0);
     });
 

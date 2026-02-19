@@ -12,7 +12,7 @@ const app = express();
 app.use(helmet());
 app.use(
     cors({
-        origin: env.CORS_ORIGIN,
+        origin: env.CORS_ORIGIN.split(",").map((o) => o.trim()),
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Request-Id", "X-Idempotency-Key"],
         credentials: true,

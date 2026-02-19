@@ -1,6 +1,6 @@
 import { Queue } from 'bullmq';
-import { redisConection } from '../config/redis';
+import { redisConnection } from '../config/redis';
 
 export const paymentQueue = new Queue('payments', {
-    connection: redisConection,
+    connection: redisConnection,
 });

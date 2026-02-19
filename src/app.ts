@@ -4,6 +4,7 @@ import cors from "cors";
 import { env } from "./config/env";
 import { requestId, requestLogger, errorHandler } from "./api/middlewares";
 import routes from "./api/routes";
+import { globalLimiter } from "@api/middlewares/rateLimiter";
 
 const app = express();
 
@@ -25,9 +26,11 @@ app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 // ─── Request tracing & logging ───────────────────────────────
 app.use(requestId);
 app.use(requestLogger);
+app.use(globalLimiter);
 
 // ─── API Routes ──────────────────────────────────────────────
 app.use("/api/v1", routes);
+
 
 // ─── 404 catch-all ───────────────────────────────────────────
 app.use((_req, res) => {
@@ -40,5 +43,8 @@ app.use((_req, res) => {
 
 // ─── Global Error Handler (must be last) ─────────────────────
 app.use(errorHandler);
+
+
+
 
 export default app;

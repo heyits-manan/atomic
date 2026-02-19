@@ -1,5 +1,5 @@
 import { Worker, Job } from 'bullmq';
-import { redisConection } from '../config/redis';
+import { redisConnection } from '../config/redis';
 import { PaymentService } from '../services/PaymentService';
 import { logger } from '../lib/logger';
 
@@ -17,7 +17,7 @@ export const paymentWorker = new Worker(
         return { paymentId: result.id, status: result.status };
     },
     {
-        connection: redisConection,
+        connection: redisConnection,
         concurrency: 5, // process up to 5 jobs in parallel
     }
 );

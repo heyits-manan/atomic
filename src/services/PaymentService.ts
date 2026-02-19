@@ -33,6 +33,8 @@ export class PaymentService {
             // 2. Add a job to the queue for async processing
             await paymentQueue.add('process-payment', { paymentId: payment.id }, {
                 jobId: payment.id, // prevents duplicate jobs for the same payment
+                attempts: 3,
+                backoff: { type: 'exponential', delay: 2000 }
             });
 
             logger.info('Payment queued', { paymentId: payment.id, status: payment.status });

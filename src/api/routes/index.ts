@@ -7,6 +7,8 @@ import { PaymentController } from "../controllers/PaymentController";
 import { createAccountSchema, accountIdParamSchema } from "../schemas/account";
 import { createPaymentSchema, paymentIdParamSchema } from "../schemas/payment";
 import { idempotencyMiddleware } from "../middlewares/idempotency";
+import { paymentLimiter } from "@api/middlewares/rateLimiter";
+
 
 const router = Router();
 
@@ -28,14 +30,11 @@ router.use(authenticate);
 // --- PAYMENTS ---
 // Idempotency only on payments
 router.get('/payments/:id', validateParams(paymentIdParamSchema), PaymentController.get)
-router.post('/payments', idempotencyMiddleware, validateBody(createPaymentSchema), PaymentController.create);
+router.post('/payments', paymentLimiter, idempotencyMiddleware, validateBody(createPaymentSchema), PaymentController.create);
 
 // --- ACCOUNTS ---
 router.post('/accounts', validateBody(createAccountSchema), AccountController.create);
 router.get('/accounts/:id', validateParams(accountIdParamSchema), AccountController.get);
 
-
-// --- TRANSFERS ---
-// router.post('/transfers', TransferController.execute);
 
 export default router;

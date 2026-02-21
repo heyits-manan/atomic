@@ -8,7 +8,6 @@ import { globalLimiter } from "@api/middlewares/rateLimiter";
 
 const app = express();
 
-// ─── Security ────────────────────────────────────────────────
 app.use(helmet());
 app.use(
     cors({
@@ -19,20 +18,15 @@ app.use(
     })
 );
 
-// ─── Parsing ─────────────────────────────────────────────────
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
-// ─── Request tracing & logging ───────────────────────────────
 app.use(requestId);
 app.use(requestLogger);
 app.use(globalLimiter);
 
-// ─── API Routes ──────────────────────────────────────────────
 app.use("/api/v1", routes);
 
-
-// ─── 404 catch-all ───────────────────────────────────────────
 app.use((_req, res) => {
     res.status(404).json({
         success: false,
@@ -41,10 +35,6 @@ app.use((_req, res) => {
     });
 });
 
-// ─── Global Error Handler (must be last) ─────────────────────
 app.use(errorHandler);
-
-
-
 
 export default app;

@@ -8,12 +8,6 @@ interface JwtPayload {
     email: string;
 }
 
-/**
- * Middleware to authenticate merchant dashboard requests via JWT.
- * Expects: Authorization: Bearer <jwt_token>
- *
- * On success, attaches `merchantId` and `merchantEmail` to the request.
- */
 export function merchantAuth(req: Request, res: Response, next: NextFunction): void {
     const authHeader = req.headers['authorization'];
 
@@ -40,7 +34,6 @@ export function merchantAuth(req: Request, res: Response, next: NextFunction): v
 
     try {
         const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
-        // Attach merchant info to request for downstream handlers
         (req as any).merchantId = decoded.merchantId;
         (req as any).merchantEmail = decoded.email;
         logger.debug('JWT authenticated', { merchantId: decoded.merchantId });

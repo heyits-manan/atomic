@@ -2,19 +2,6 @@ import { PoolClient } from 'pg';
 import { pool } from '../config/db';
 import { logger } from '../lib/logger';
 
-/**
- * ACID Transaction Manager
- *
- * Wraps a callback in BEGIN / COMMIT / ROLLBACK.
- * The callback receives a single PoolClient that is already inside a transaction.
- *
- * Usage:
- *   const result = await TransactionManager.run(async (client) => {
- *     // all queries here share the same transaction
- *     await AccountRepository.updateBalance(client, id, amount);
- *     return something;
- *   });
- */
 export class TransactionManager {
     static async run<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
         const client = await pool.connect();

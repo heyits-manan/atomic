@@ -9,8 +9,6 @@ const server = app.listen(env.PORT, () => {
     logger.info(`Payment worker started (concurrency: 5)`);
 });
 
-// ─── Graceful shutdown ──────────────────────────────────────
-
 function shutdown(signal: string) {
     logger.info(`Received ${signal}. Starting graceful shutdown...`);
 
@@ -34,7 +32,6 @@ function shutdown(signal: string) {
         process.exit(0);
     });
 
-    // Force exit after 10 seconds if graceful shutdown hangs
     setTimeout(() => {
         logger.error("Graceful shutdown timed out. Forcing exit.");
         process.exit(1);
@@ -46,7 +43,6 @@ process.on("SIGINT", () => shutdown("SIGINT"));
 
 process.on("unhandledRejection", (reason: unknown) => {
     logger.error("Unhandled promise rejection", { reason });
-    // Let the process crash so it can be restarted by a process manager
     throw reason;
 });
 

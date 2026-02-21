@@ -3,9 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 export type EntryType = 'DEBIT' | 'CREDIT';
 
-/**
- * Shape of a ledger_entries row.
- */
 export interface LedgerEntry {
     id: string;
     transaction_id: string;
@@ -32,9 +29,6 @@ function toLedgerEntry(row: LedgerEntryRow): LedgerEntry {
 }
 
 export class LedgerRepository {
-    /**
-     * Inserts a single ledger entry (either DEBIT or CREDIT).
-     */
     static async createEntry(
         client: PoolClient,
         {
@@ -64,14 +58,6 @@ export class LedgerRepository {
         return toLedgerEntry(row);
     }
 
-    /**
-     * Inserts a matched DEBIT + CREDIT pair atomically.
-     * Returns the generated transactionId so the caller can reference it.
-     *
-     * Double-Entry Rule:
-     *   DEBIT  = money leaves the source account
-     *   CREDIT = money enters the destination account
-     */
     static async createPair(
         client: PoolClient,
         {

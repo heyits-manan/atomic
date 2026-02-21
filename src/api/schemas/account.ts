@@ -1,8 +1,5 @@
 import { z } from 'zod';
 
-/**
- * POST /api/v1/accounts — request body schema.
- */
 export const createAccountSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     currency: z.enum(['USD', 'INR', 'EUR'], {
@@ -10,9 +7,6 @@ export const createAccountSchema = z.object({
     }),
 });
 
-/**
- * GET /api/v1/accounts/:id — params schema.
- */
 export const accountIdParamSchema = z.object({
     id: z.uuid({ message: 'Invalid account ID format' }),
 });

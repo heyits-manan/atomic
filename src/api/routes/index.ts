@@ -12,13 +12,8 @@ import { registerSchema, loginSchema, revokeKeyParamSchema } from "../schemas/me
 import { idempotencyMiddleware } from "../middlewares/idempotency";
 import { paymentLimiter } from "@api/middlewares/rateLimiter";
 
-
 const router = Router();
 
-/**
- * GET /health
- * Basic health check endpoint. (Public — no auth required)
- */
 router.get("/health", (_req: Request, res: Response<ApiResponse<{ status: string }>>) => {
     res.status(200).json({
         success: true,
@@ -27,27 +22,20 @@ router.get("/health", (_req: Request, res: Response<ApiResponse<{ status: string
     });
 });
 
-// ─── Merchant Routes (Public: register + login) ─────────────
 router.post('/merchants/register', validateBody(registerSchema), MerchantController.register);
 router.post('/merchants/login', validateBody(loginSchema), MerchantController.login);
 
-// ─── Merchant Routes (JWT-protected) ────────────────────────
 router.get('/merchants/dashboard', merchantAuth, MerchantController.getDashboard);
 router.post('/merchants/api-keys', merchantAuth, MerchantController.generateApiKey);
 router.get('/merchants/api-keys', merchantAuth, MerchantController.listApiKeys);
 router.delete('/merchants/api-keys/:id', merchantAuth, validateParams(revokeKeyParamSchema), MerchantController.revokeApiKey);
 
-// ─── Protected Routes (everything below requires a valid API key) ───
 router.use(authenticate);
 
-// --- PAYMENTS ---
-// Idempotency only on payments
 router.get('/payments/:id', validateParams(paymentIdParamSchema), PaymentController.get)
 router.post('/payments', paymentLimiter, idempotencyMiddleware, validateBody(createPaymentSchema), PaymentController.create);
 
-// --- ACCOUNTS ---
 router.post('/accounts', validateBody(createAccountSchema), AccountController.create);
 router.get('/accounts/:id', validateParams(accountIdParamSchema), AccountController.get);
-
 
 export default router;

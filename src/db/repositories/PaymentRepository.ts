@@ -1,8 +1,5 @@
 import { PoolClient, QueryResult } from 'pg';
 
-/**
- * Shape of a Payment row from the database.
- */
 export interface Payment {
     id: string;
     merchantId: string;
@@ -18,9 +15,6 @@ export interface Payment {
     updatedAt: Date;
 }
 
-/**
- * Raw row from PG — column names use snake_case.
- */
 interface PaymentRow {
     id: string;
     merchant_id: string;
@@ -36,9 +30,6 @@ interface PaymentRow {
     updated_at: Date;
 }
 
-/**
- * Converts snake_case DB row to camelCase Payment object.
- */
 function toPayment(row: PaymentRow): Payment {
     return {
         id: row.id,
@@ -57,9 +48,6 @@ function toPayment(row: PaymentRow): Payment {
 }
 
 export class PaymentRepository {
-    /**
-     * Creates a new payment record with status PENDING.
-     */
     static async create(
         client: PoolClient,
         body: {
@@ -93,29 +81,18 @@ export class PaymentRepository {
         return toPayment(row);
     }
 
-    /**
-     * Finds a payment by its ID.
-     */
     static async findById(client: PoolClient, id: string): Promise<Payment | null> {
         const query = `SELECT * FROM payments WHERE id = $1;`;
         const result: QueryResult<PaymentRow> = await client.query(query, [id]);
         return result.rows[0] ? toPayment(result.rows[0]) : null;
     }
 
-    /**
-     * Finds a payment by its idempotency key.
-     * Useful for checking if a payment was already queued.
-     */
     static async findByIdempotencyKey(client: PoolClient, key: string): Promise<Payment | null> {
         const query = `SELECT * FROM payments WHERE idempotency_key = $1;`;
         const result: QueryResult<PaymentRow> = await client.query(query, [key]);
         return result.rows[0] ? toPayment(result.rows[0]) : null;
     }
 
-    /**
-     * Updates the status of a payment (the state machine transition).
-     * PENDING → PROCESSING → SUCCESS / FAILED
-     */
     static async updateStatus(
         client: PoolClient,
         id: string,

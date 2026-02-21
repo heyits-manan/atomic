@@ -23,7 +23,6 @@ export async function idempotencyMiddleware(req: Request, res: Response, next: N
             }
 
             if (existingRecord.status === 'COMPLETED') {
-                //something
                 return res.status(existingRecord.statusCode!).json({
                     success: true,
                     data: existingRecord.responseBody,
@@ -40,7 +39,6 @@ export async function idempotencyMiddleware(req: Request, res: Response, next: N
             }
 
             if (existingRecord.status === 'FAILED') {
-                // Allow retry — delete the old failed record so a fresh one can be created below
                 await client.query('DELETE FROM idempotency_keys WHERE key = $1', [idempotencyKey]);
             }
         }
@@ -72,7 +70,6 @@ export async function idempotencyMiddleware(req: Request, res: Response, next: N
             return originalJson(body);
         }
 
-        // Mark as FAILED if the response is an error (status >= 400)
         res.on('finish', () => {
             if (res.statusCode >= 400) {
                 IdempotencyRepository.update(client, {

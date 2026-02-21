@@ -24,7 +24,7 @@ async function seed() {
         console.error(err);
     } finally {
         client.release();
-        pool.end(); // Close connection
+        pool.end();
     }
 }
 

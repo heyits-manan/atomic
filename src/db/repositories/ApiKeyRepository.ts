@@ -9,9 +9,6 @@ export interface ApiKey {
     revoked_at: Date | null;
 }
 
-/**
- * Row returned when looking up an active key by hash (includes merchant info).
- */
 export interface ApiKeyWithMerchant {
     id: string;
     merchant_id: string;
@@ -19,9 +16,6 @@ export interface ApiKeyWithMerchant {
 }
 
 export class ApiKeyRepository {
-    /**
-     * Create a new API key record.
-     */
     static async create(
         client: PoolClient,
         { merchantId, keyHash, prefix }: { merchantId: string; keyHash: string; prefix: string }
@@ -39,10 +33,6 @@ export class ApiKeyRepository {
         return row;
     }
 
-    /**
-     * Find an active (non-revoked) API key by its SHA-256 hash.
-     * Joins with merchants to get the account_id for downstream use.
-     */
     static async findActiveByHash(
         client: PoolClient,
         keyHash: string
@@ -57,9 +47,6 @@ export class ApiKeyRepository {
         return result.rows[0] ?? null;
     }
 
-    /**
-     * List all API keys for a merchant (active and revoked).
-     */
     static async findByMerchantId(client: PoolClient, merchantId: string): Promise<ApiKey[]> {
         const query = `
             SELECT id, merchant_id, prefix, created_at, revoked_at
@@ -71,10 +58,6 @@ export class ApiKeyRepository {
         return result.rows;
     }
 
-    /**
-     * Revoke an API key (set revoked_at to now).
-     * Returns true if the key was found and revoked.
-     */
     static async revoke(client: PoolClient, keyId: string, merchantId: string): Promise<boolean> {
         const query = `
             UPDATE api_keys

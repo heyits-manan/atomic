@@ -3,10 +3,6 @@ import { redisConnection } from '../config/redis';
 import { PaymentService } from '../services/PaymentService';
 import { logger } from '../lib/logger';
 
-/**
- * Background worker that picks up jobs from the 'payments' queue
- * and fulfills them (ledger transfer + status update).
- */
 export const paymentWorker = new Worker(
     'payments',
     async (job: Job<{ paymentId: string }>) => {
@@ -18,11 +14,9 @@ export const paymentWorker = new Worker(
     },
     {
         connection: redisConnection,
-        concurrency: 5, // process up to 5 jobs in parallel
+        concurrency: 5,
     }
 );
-
-// ─── Worker event listeners ─────────────────────────────
 
 paymentWorker.on('completed', (job) => {
     logger.info('Job completed', { jobId: job.id, result: job.returnvalue });

@@ -19,14 +19,12 @@ export const logger = winston.createLogger({
     ),
     defaultMeta: { service: "atomic-payment-gateway" },
     transports: [
-        // Console — colorized in development, JSON in production
         new winston.transports.Console({
             format:
                 env.NODE_ENV === "production"
                     ? combine(winston.format.json())
                     : combine(colorize(), logFormat),
         }),
-        // File — always JSON for machine parsing
         new winston.transports.File({
             filename: "logs/error.log",
             level: "error",

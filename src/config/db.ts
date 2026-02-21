@@ -20,9 +20,6 @@ pool.on("error", (err: Error) => {
     process.exit(-1);
 });
 
-/**
- * Execute a parameterized query against the pool.
- */
 export async function query<T extends Record<string, unknown>>(
     text: string,
     params?: unknown[]
@@ -34,17 +31,11 @@ export async function query<T extends Record<string, unknown>>(
     return result;
 }
 
-/**
- * Get a client from the pool for transactions.
- */
 export async function getClient() {
     const client = await pool.connect();
     return client;
 }
 
-/**
- * Gracefully close the database pool.
- */
 export async function closePool(): Promise<void> {
     logger.info("Closing PostgreSQL connection pool...");
     await pool.end();

@@ -11,32 +11,24 @@ import { env } from '../config/env';
 const SALT_ROUNDS = 12;
 
 export class MerchantService {
-    /**
-     * Register a new merchant.
-     * Creates an account row, then a merchant row linked to it.
-     */
     static async register(email: string, password: string) {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
 
-            // Check if email already exists
             const existing = await MerchantRepository.findByEmail(client, email);
             if (existing) {
                 throw new ConflictError('Email already registered');
             }
 
-            // Hash password
             const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-            // Create an account for the merchant (used for balances)
             const account = await AccountRepository.create(client, {
                 name: email,
                 currency: 'USD',
                 allowNegative: false,
             });
 
-            // Create the merchant
             const merchant = await MerchantRepository.create(client, {
                 email,
                 passwordHash,
@@ -58,9 +50,6 @@ export class MerchantService {
         }
     }
 
-    /**
-     * Login a merchant. Returns a JWT token.
-     */
     static async login(email: string, password: string) {
         const client = await pool.connect();
         try {
@@ -93,27 +82,17 @@ export class MerchantService {
         }
     }
 
-    /**
-     * Generate a new API key for a merchant.
-     * Returns the raw key ONCE — only the hash is stored.
-     */
     static async generateApiKey(merchantId: string) {
         const client = await pool.connect();
         try {
-            // Verify merchant exists
             const merchant = await MerchantRepository.findById(client, merchantId);
             if (!merchant) {
                 throw new NotFoundError('Merchant not found');
             }
 
-            // Generate raw key: sk_test_ + 48 hex chars
             const rawBytes = randomBytes(24);
             const rawKey = `sk_test_${rawBytes.toString('hex')}`;
-
-            // SHA-256 hash for storage
             const keyHash = createHash('sha256').update(rawKey).digest('hex');
-
-            // Prefix for display (first 14 chars)
             const prefix = rawKey.slice(0, 14);
 
             await ApiKeyRepository.create(client, {
@@ -122,18 +101,12 @@ export class MerchantService {
                 prefix,
             });
 
-            return {
-                rawKey,  // Show this once to the merchant
-                prefix,
-            };
+            return { rawKey, prefix };
         } finally {
             client.release();
         }
     }
 
-    /**
-     * Revoke an API key.
-     */
     static async revokeApiKey(merchantId: string, keyId: string) {
         const client = await pool.connect();
         try {
@@ -146,9 +119,6 @@ export class MerchantService {
         }
     }
 
-    /**
-     * List all API keys for a merchant.
-     */
     static async listApiKeys(merchantId: string) {
         const client = await pool.connect();
         try {
@@ -165,9 +135,6 @@ export class MerchantService {
         }
     }
 
-    /**
-     * Get dashboard data: merchant info, account balance, recent payments.
-     */
     static async getDashboard(merchantId: string) {
         const client = await pool.connect();
         try {
@@ -178,7 +145,6 @@ export class MerchantService {
 
             const account = await AccountRepository.findById(client, merchant.account_id);
 
-            // Get recent payments for this merchant
             const paymentsResult = await client.query(
                 `SELECT id, amount, currency, status, source, created_at
                  FROM payments

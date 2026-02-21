@@ -3,10 +3,6 @@ import { AccountRepository } from '../db/repositories/AccountRepository';
 import { NotFoundError } from '../lib/errors';
 
 export class AccountService {
-    /**
-     * Create a new user account.
-     * Default: allowNegative = false (standard users can't overdraft).
-     */
     static async createAccount(data: { name: string; currency: string }) {
         const client = await pool.connect();
         try {
@@ -21,10 +17,6 @@ export class AccountService {
         }
     }
 
-    /**
-     * Get an account by ID.
-     * Throws NotFoundError if the account doesn't exist.
-     */
     static async getAccount(id: string) {
         const client = await pool.connect();
         try {

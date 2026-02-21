@@ -4,17 +4,12 @@ import { logger } from "../../lib/logger";
 import { ApiResponse } from "../../types";
 import { env } from "../../config/env";
 
-/**
- * Global error handling middleware.
- * Must be registered LAST in the middleware chain (4-arg signature).
- */
 export function errorHandler(
     err: Error,
     _req: Request,
     res: Response<ApiResponse>,
     _next: NextFunction
 ): void {
-    // Operational errors we threw intentionally
     if (err instanceof AppError) {
         logger.warn(`AppError: ${err.message}`, {
             statusCode: err.statusCode,
@@ -29,7 +24,6 @@ export function errorHandler(
         return;
     }
 
-    // Unexpected / programming errors
     logger.error("Unhandled error", {
         message: err.message,
         stack: err.stack,
